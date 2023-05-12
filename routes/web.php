@@ -16,3 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/user/activate', [App\Http\Controllers\AuthController::class, 'activate'])->name('activate');
+
+
+// Route::get('/email', function () {
+//     return view('emails.successfully-signup');
+// });

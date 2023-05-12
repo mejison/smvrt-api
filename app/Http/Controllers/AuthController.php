@@ -14,7 +14,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register', 'resend']]);
+        $this->middleware('auth:api', ['except' => ['login','register', 'resend', 'activate']]);
     }
 
     public function login(Request $request)
@@ -51,6 +51,18 @@ class AuthController extends Controller
         ]);
     }
 
+    public function activate(Request $request) {
+        $request->validate([
+            'email' => 'required|string|email|max:255',
+        ]);
+
+        $user = User::where('email', $request->input('email'))->first();
+        $user->email_verified_at = now();
+        $user->save();
+
+        return redirect($request->input('redirect'));
+    }
+
     public function resend(Request $request) {
         $request->validate([
             'email' => 'required|string|email|max:255',
@@ -58,9 +70,9 @@ class AuthController extends Controller
         ]);
 
         try {
-            $link = $request->input('activate_link') . "/auth/activate?email=" . $request->email;
+            $link =  url("/") . "/user/activate?email=" . $request->email . "&redirect=" . $request->input('redirect') . '/signup?email=' . $request->email;
             Mail::to($request->email)
-                ->send(new SuccessfullySignUp($link));
+                ->send(new SuccessfullySignUp($link, $request->email));
         } catch (\Exeption $e) {
             // ...
         }
@@ -81,9 +93,9 @@ class AuthController extends Controller
         $token = Auth::login($user);
 
         try {
-            $link = $request->input('activate_link') . "/auth/activate?email=" . $request->email;
+            $link =  url("/") . "/user/activate?email=" . $request->email . "&redirect=" . $request->input('redirect') . '/signup?email=' . $request->email;
             Mail::to($user)
-                ->send(new SuccessfullySignUp($link));
+                ->send(new SuccessfullySignUp($link, $request->email));
         } catch (\Exeption $e) {
             // ...
         }

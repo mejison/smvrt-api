@@ -6,12 +6,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SuccessfullySignUp;
+
 class AuthController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register']]);
+        $this->middleware('auth:api', ['except' => ['login','register', 'resend']]);
     }
 
     public function login(Request $request)
@@ -48,20 +51,43 @@ class AuthController extends Controller
         ]);
     }
 
+    public function resend(Request $request) {
+        $request->validate([
+            'email' => 'required|string|email|max:255',
+            'activate_link' => 'required'
+        ]);
+
+        try {
+            $link = $request->input('activate_link') . "/auth/activate?email=" . $request->email;
+            Mail::to($request->email)
+                ->send(new SuccessfullySignUp($link));
+        } catch (\Exeption $e) {
+            // ...
+        }
+    }
+
     public function register(Request $request) {
         $request->validate([
-            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'name' => $request->name ?? "",
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
         $token = Auth::login($user);
+
+        try {
+            $link = $request->input('activate_link') . "/auth/activate?email=" . $request->email;
+            Mail::to($user)
+                ->send(new SuccessfullySignUp($link));
+        } catch (\Exeption $e) {
+            // ...
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
@@ -93,5 +119,4 @@ class AuthController extends Controller
             ]
         ]);
     }
-
 }

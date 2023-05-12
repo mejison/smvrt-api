@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SuccessfullySignUp;
 
+use Illuminate\Support\Facades\Cookie;
+
 class AuthController extends Controller
 {
 
@@ -29,11 +31,20 @@ class AuthController extends Controller
         if (!$token) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized',
+                'message' => 'Incorrect credentials',
             ], 401);
         }
 
         $user = Auth::user();
+        if ( ! $user->email_verified_at) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'The account is not activated',
+            ], 401);
+        }
+ 
+Cookie::queue('name', 'value', 234234);
+
         return response()->json([
                 'status' => 'success',
                 'user' => $user,
@@ -66,7 +77,7 @@ class AuthController extends Controller
     public function resend(Request $request) {
         $request->validate([
             'email' => 'required|string|email|max:255',
-            'activate_link' => 'required'
+            'redirect' => 'required'
         ]);
 
         try {

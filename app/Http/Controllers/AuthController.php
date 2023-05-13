@@ -11,13 +11,16 @@ use App\Mail\SuccessfullySignUp;
 use App\Mail\ForgotPassword;
 
 use Illuminate\Support\Facades\Cookie;
-
+use Laravel\Socialite\Facades\Socialite;
+ 
 class AuthController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register', 'resend', 'activate', 'forgot', 'reset']]);
+        $this->middleware('auth:api', ['except' => ['login','register', 'resend',
+                                                     'activate', 'forgot', 'reset',
+                                                     'google_redirect', 'callback_google']]);
     }
 
     public function login(Request $request)
@@ -183,5 +186,32 @@ class AuthController extends Controller
             'status' => 'success',
             'message' => 'The password successfully reset',
         ]);
+    }
+
+    public function google_redirect(Request $request) {
+        return response()->json([
+            'status' => 'success',
+            'data' => Socialite::driver('google')
+            ->stateless()
+            ->redirect()
+            ->getTargetUrl()
+        ]);
+    }
+
+    public function callback_google(Request $request) {
+        $googleUser = Socialite::driver('google')->stateless()->user();
+        
+        $user = User::where('email', $googleUser->email)->first();
+        if ( ! $user) {
+            $user = User::create([
+                'email' => $googleUser->email,
+                'name' => $googleUser->name,
+                'password' => bcrypt(time())
+            ]);
+            $user->save();
+        }
+
+        $token = Auth::login($user);
+        return view('social-connect', ['token' => $token, 'user' => $user]);
     }
 }

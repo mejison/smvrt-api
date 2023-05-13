@@ -19,3 +19,5 @@ Route::post('/auth/login', [App\Http\Controllers\AuthController::class, 'login']
 Route::post('/auth/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 Route::post('/auth/refresh', [App\Http\Controllers\AuthController::class, 'refresh'])->name('refresh');
 Route::get('/auth/me', [App\Http\Controllers\AuthController::class, 'me'])->name('me');
+Route::post('/auth/forgot', [App\Http\Controllers\AuthController::class, 'forgot'])->name('forgot');
+Route::post('/auth/reset', [App\Http\Controllers\AuthController::class, 'reset'])->name('reset');

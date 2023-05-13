@@ -8,6 +8,7 @@ use App\Models\User;
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SuccessfullySignUp;
+use App\Mail\ForgotPassword;
 
 use Illuminate\Support\Facades\Cookie;
 
@@ -16,7 +17,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login','register', 'resend', 'activate']]);
+        $this->middleware('auth:api', ['except' => ['login','register', 'resend', 'activate', 'forgot', 'reset']]);
     }
 
     public function login(Request $request)
@@ -43,8 +44,6 @@ class AuthController extends Controller
             ], 401);
         }
  
-Cookie::queue('name', 'value', 234234);
-
         return response()->json([
                 'status' => 'success',
                 'user' => $user,
@@ -140,6 +139,49 @@ Cookie::queue('name', 'value', 234234);
                 'token' => Auth::refresh(),
                 'type' => 'bearer',
             ]
+        ]);
+    }
+
+    public function forgot(Request $request) {
+        $request->validate([
+            'email' => 'required|string|email|max:255|exists:users,email',
+            'link' => 'required'
+        ]);
+
+        $link = $request->link . '/reset/' . md5($request->email);
+        try {
+            Mail::to($request->email)
+                ->send(new ForgotPassword($link, $request->email));
+        } catch (\Exception $e) {
+            // ...
+        }
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Successfully sent email for reset password',
+        ]);
+    }
+
+    public function reset(Request $request) {
+        $request->validate([
+            'hash' => 'required|string',
+            'password' => 'required|string|min:6'
+        ]);
+
+        $user = User::whereRaw('md5(email) = "' . $request->input('hash') . '"')->first();
+        if ( ! $user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found!',
+            ], 401);
+        }
+
+        $user->password = bcrypt($request->input('password'));
+        $user->save();
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'The password successfully reset',
         ]);
     }
 }

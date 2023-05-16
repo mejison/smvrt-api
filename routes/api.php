@@ -21,5 +21,7 @@ Route::post('/auth/refresh', [App\Http\Controllers\AuthController::class, 'refre
 Route::get('/auth/me', [App\Http\Controllers\AuthController::class, 'me'])->name('me');
 Route::post('/auth/forgot', [App\Http\Controllers\AuthController::class, 'forgot'])->name('forgot');
 Route::post('/auth/reset', [App\Http\Controllers\AuthController::class, 'reset'])->name('reset');
-
 Route::get('/auth/google/redirect', [App\Http\Controllers\AuthController::class, 'google_redirect'])->name('redirect');
+
+/* profile */
+Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('update');

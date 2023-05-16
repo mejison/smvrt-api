@@ -20,6 +20,10 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $fillable = [
         'name',
+        'fname',
+        'lname',
+        'phone',
+        'avatar',
         'email',
         'password',
     ];
@@ -53,6 +57,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
+    public function getAvatarAttribute($value) {
+        return url('/storage') . '/' . str_replace("public/", "", $value);
+    }
+
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *
@@ -63,5 +71,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
 
 }

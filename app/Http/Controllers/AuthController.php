@@ -167,11 +167,19 @@ class AuthController extends Controller
 
     public function reset(Request $request) {
         $request->validate([
-            'hash' => 'required|string',
+            'hash' => 'string',
+            'email' => 'string|email',
             'password' => 'required|string|min:6'
         ]);
 
-        $user = User::whereRaw('md5(email) = "' . $request->input('hash') . '"')->first();
+        if ($request->input('hash')) {
+            $user = User::whereRaw('md5(email) = "' . $request->input('hash') . '"')->first();
+        }
+
+        if ($request->input('email')) {
+            $user = User::where('email', $request->input('email'))->first();
+        }
+
         if ( ! $user) {
             return response()->json([
                 'status' => 'error',
@@ -184,7 +192,7 @@ class AuthController extends Controller
         
         return response()->json([
             'status' => 'success',
-            'message' => 'The password successfully reset',
+            'message' => 'The password successfully updated',
         ]);
     }
 

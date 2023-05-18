@@ -60,7 +60,10 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function getAvatarAttribute($value) {
-        return url('/storage') . '/' . str_replace("public/", "", $value);
+        if ($value) {
+            return url('/storage') . '/' . str_replace("public/", "", $value);
+        }
+        return $value;
     }
 
     /**

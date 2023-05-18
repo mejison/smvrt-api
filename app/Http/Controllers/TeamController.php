@@ -75,17 +75,16 @@ class TeamController extends Controller
             $role = $member['role']['value'];
             $name = $member['name'];
             
-            $in_platform = User::where('email', $email)->count();
+            $in_platform = User::where('email', $email)->first();
             if ($in_platform) {
-                
-                $exist =  $team->members()->where('users.email', $email)->count();
+                $exist = TeamMember::where('team_id', $team->id)->where('user_id', $in_platform->id)->count();
                 if ($exist) {
                     return response()->json([
                         'status' => 'error',
                         'message' => 'User already exist in team',
                     ], 401);
                 } else {
-                    $team->members()->attach($in_platform, ['role_id' => $role, 'name' => $name, 'email' => $email]);
+                    $team->members()->attach($in_platform, ['user_id' => $in_platform->id, 'role_id' => $role, 'name' => $name, 'email' => $email]);
                 }
             } else {
                 $exist = TeamMember::where('team_id', $team->id)->where('email', $email)->count();

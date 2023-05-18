@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use App\Models\Setting;
+use App\Models\Team;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -71,6 +73,14 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+    
+    public function settings()
+    {
+        return $this->hasOne(Setting::class);
+    }
 
-
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class, 'team_members', 'user_id', 'team_id')->withPivot('email', 'name');
+    }
 }

@@ -25,3 +25,17 @@ Route::get('/auth/google/redirect', [App\Http\Controllers\AuthController::class,
 
 /* profile */
 Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('update');
+
+/* settings */
+Route::get('/profile/settings', [App\Http\Controllers\ProfileController::class, 'get_settings'])->name('get-settings');
+Route::post('/profile/settings', [App\Http\Controllers\ProfileController::class, 'update_settings'])->name('update-settings');
+
+/* roles */
+Route::get('/roles', [App\Http\Controllers\ProfileController::class, 'get_roles'])->name('get-all-roles');
+
+/* teams */
+Route::get('/profile/teams', [App\Http\Controllers\ProfileController::class, 'get_teams'])->name('get-profile-teams');
+Route::delete('/team/{team}/member/remove', [App\Http\Controllers\TeamController::class, 'remove_member'])->name('remove-member-from-team');
+Route::put('/team/{team}/member/update', [App\Http\Controllers\TeamController::class, 'member_update'])->name('member-update');
+Route::post('/team/{team}/member/add', [App\Http\Controllers\TeamController::class, 'add_member'])->name('add-member');
+Route::post('/team', [App\Http\Controllers\TeamController::class, 'create_team'])->name('create-team');

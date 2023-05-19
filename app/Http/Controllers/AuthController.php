@@ -12,6 +12,9 @@ use App\Mail\ForgotPassword;
 
 use Illuminate\Support\Facades\Cookie;
 use Laravel\Socialite\Facades\Socialite;
+
+use App\Models\Team;
+use App\Models\TeamMember;
  
 class AuthController extends Controller
 {
@@ -95,6 +98,7 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
+            'team' => 'string'
         ]);
 
         $user = User::create([
@@ -102,6 +106,14 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        if ($request->input('team')) {
+            $team = Team::whereRaw('md5(id) = "' . $request->input('team') . '"')->first();
+            if ($team) {
+                $member = TeamMember::where('team_id', $team->id)->where('email', $request->email)->first();
+                $member->update(['accepted' => true, 'user_id' => $user->id]);
+            }
+        }
 
         $token = Auth::login($user);
 

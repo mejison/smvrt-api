@@ -8,12 +8,14 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 use App\Models\TeamMember;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\InvintationSignUp;
 
 class TeamController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => []]);
+        $this->middleware('auth:api', ['except' => ['accept_invite']]);
     }
 
     public function remove_member(Request $request, Team $team) {
@@ -63,9 +65,14 @@ class TeamController extends Controller
     }
 
     public function add_member(Request $request, Team $team) {
+        $user = auth()->user();
+
         $request->validate([   
             'members' => [
                 'array'
+            ],
+            'redirect' => [
+                'required'
             ]
         ]);
 
@@ -74,6 +81,9 @@ class TeamController extends Controller
             $email = $member['email'];
             $role = $member['role']['value'];
             $name = $member['name'];
+
+            $mail_to = "";
+            $mail_invite_link = "";
             
             $in_platform = User::where('email', $email)->first();
             if ($in_platform) {
@@ -85,6 +95,9 @@ class TeamController extends Controller
                     ], 401);
                 } else {
                     $team->members()->attach($in_platform, ['user_id' => $in_platform->id, 'role_id' => $role, 'name' => $name, 'email' => $email]);
+                    
+                    $mail_to = $in_platform->email;
+                    $mail_invite_link = url("/") . '/user/invite/accept/' . md5($team->id) . '/' . $mail_to . '?redirect=' . $request->input('redirect') . '/signin';
                 }
             } else {
                 $exist = TeamMember::where('team_id', $team->id)->where('email', $email)->count();
@@ -94,15 +107,25 @@ class TeamController extends Controller
                         'message' => 'User already exist in team',
                     ], 400);
                 } else {
-                    DB::table('team_members')->insert([
+                    $insertId = DB::table('team_members')->insert([
                         'name' => $name,
                         'email' => $email,
                         'role_id' => $role,
                         'team_id' => $team->id,
                         'user_id' => '0'
                     ]);
+                    $mail_to = $email;
+                    $mail_invite_link = $request->input('redirect') . '/signup-by-invitation/' . md5($team->id)  . "?email=" . $mail_to;
                 }
-        
+            }
+
+            try {
+                $from = $user->fname ? $user->fname . ' ' . $user->lname : $user->email;
+
+                Mail::to($mail_to)
+                    ->send(new InvintationSignUp($from, $mail_invite_link));
+            } catch (\Exeption $e) {
+                // ...
             }
         }
 
@@ -120,6 +143,9 @@ class TeamController extends Controller
             ],
             'members' => [
                 'array'
+            ],
+            'redirect' => [
+                'required'
             ]
         ]);
 
@@ -137,7 +163,10 @@ class TeamController extends Controller
         ) , 'email' => $user->email ]);
 
         if ( ! empty($members)) {
-            collect($members)->each(function($member) use (&$team, $request) {
+            collect($members)->each(function($member) use (&$team, $request, $user) {
+                $mail_to = "";
+                $mail_invite_link = "";
+
                 $in_platform = User::where('email', $member['email'])->count();
                 if ($in_platform) {
                     $exist =  $team->members()->where('users.email', $request->input('email'))->count();
@@ -149,6 +178,9 @@ class TeamController extends Controller
                     }
                     
                     $team->members()->attach($in_platform, ['role_id' => $member['role']['value'], 'name' => $member['name'], 'email' => $member['email']]);
+                
+                    $mail_to = $member['email'];
+                    $mail_invite_link = url("/") . '/user/invite/accept/' . md5($team->id) . '/' . $mail_to . '?redirect=' . $request->input('redirect') . '/signin';
                 } else {
                     DB::table('team_members')->insert([
                         'name' => $member['name'],
@@ -157,7 +189,20 @@ class TeamController extends Controller
                         'team_id' => $team->id,
                         'user_id' => '0'
                     ]);
+
+                    $mail_to = $member['email'];
+                    $mail_invite_link = $request->input('redirect') . '/signup-by-invitation/' . md5($team->id) . "?email=" . $mail_to;
                 }
+
+                try {
+                    $from = $user->fname ? $user->fname . ' ' . $user->lname : $user->email;
+    
+                    Mail::to($mail_to)
+                        ->send(new InvintationSignUp($from, $mail_invite_link));
+                } catch (\Exeption $e) {
+                    // ...
+                }
+
             });
         }
 
@@ -166,5 +211,15 @@ class TeamController extends Controller
             'message' => 'Successfully created',
             'data' => $team,
         ], 201);
+    }
+
+    public function accept_invite(Request $request, $team_hash, $email) {
+        $team = Team::whereRaw('md5(id) = "' . $team_hash . '"')->first();
+        if ($team) {
+            $member = TeamMember::where('team_id', $team->id)->where('email', $email)->first();
+            $member->update(['accepted' => true]);
+        }
+
+        return redirect($request->input('redirect'));
     }
 }

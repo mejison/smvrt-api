@@ -9,6 +9,8 @@ class TeamMember extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['accepted', 'user_id', 'team_id', 'name', 'email', 'role_id'];
+
     public function user() {
         return $this->hasOne(User::class, 'id', 'user_id');
     }

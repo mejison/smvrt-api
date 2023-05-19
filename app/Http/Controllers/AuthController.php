@@ -38,7 +38,7 @@ class AuthController extends Controller
         if (!$token) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Incorrect credentials',
+                'message' => 'The Email Address or Password you’ve entered is incorrect.',
             ], 401);
         }
 
@@ -86,7 +86,7 @@ class AuthController extends Controller
         ]);
 
         try {
-            $link =  url("/") . "/user/activate?email=" . $request->email . "&redirect=" . $request->input('redirect') . '/signup?email=' . $request->email;
+            $link =  url("/") . "/user/activate?email=" . $request->email . "&redirect=" . $request->input('redirect') . '/signin?email=' . $request->email;
             Mail::to($request->email)
                 ->send(new SuccessfullySignUp($link, $request->email));
         } catch (\Exeption $e) {
@@ -99,6 +99,9 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
             'team' => 'string'
+        ], [
+            'unique' => 'This email address is already registered. 
+                Please proceed to the <a class="text-[#1860CC] !text-[14px] underline underline-offset-2" href="/signin">Sign In</a> page to login or click <a href="/forgot" class="text-[#1860CC] !text-[14px] underline underline-offset-2">Forgot Password</a> to reset your password.'
         ]);
 
         $user = User::create([
@@ -118,7 +121,7 @@ class AuthController extends Controller
         $token = Auth::login($user);
 
         try {
-            $link =  url("/") . "/user/activate?email=" . $request->email . "&redirect=" . $request->input('redirect') . '/signup?email=' . $request->email;
+            $link =  url("/") . "/user/activate?email=" . $request->email . "&redirect=" . $request->input('redirect') . '/signin?email=' . $request->email;
             Mail::to($user)
                 ->send(new SuccessfullySignUp($link, $request->email));
         } catch (\Exeption $e) {
@@ -161,6 +164,9 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|string|email|max:255|exists:users,email',
             'link' => 'required'
+        ], [
+            'exists' => 'There is not an account registered with this email account. 
+                Please check the email address or <a href="/signup" class="text-[#1860CC] !text-[14px] underline underline-offset-2">set up your account</a>'
         ]);
 
         $link = $request->link . '/reset/' . md5($request->email);

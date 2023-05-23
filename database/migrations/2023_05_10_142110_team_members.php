@@ -15,16 +15,16 @@ class TeamMembers extends Migration
     {
         Schema::create('team_members', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email');
-            $table->integer('team_id')->nullabel();
-            $table->integer('user_id')->nullabel();
-            $table->integer('role_id')->nullabel();
+            $table->string('name', 255);
+            $table->string('email', 255);
+            $table->unsignedBigInteger('team_id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('role_id');
             $table->timestamps();
 
-            $table->index('team_id')->foreign('team_id')->references('id')->on('teams');
-            $table->index('user_id')->foreign('user_id')->references('id')->on('users');
-            $table->index('role_id')->foreign('role_id')->references('id')->on('roles');
+            $table->foreign('team_id')->references('id')->on('teams');
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('role_id')->references('id')->on('roles');
         });
     }
 

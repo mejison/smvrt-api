@@ -15,7 +15,7 @@ class CreateSettingsTable extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
+            $table->unsignedBigInteger('user_id');
 
             $table->boolean('assignee_changes')->default(true);
             $table->boolean('status_cahnges')->default(true);
@@ -28,7 +28,7 @@ class CreateSettingsTable extends Migration
 
             $table->timestamps();
 
-            $table->index('user_id')->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

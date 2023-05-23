@@ -15,14 +15,14 @@ class CreateCommentsTable extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->integer('project_id');
-            $table->integer('user_id');
-            $table->enum('status', ['todo','redline','resolved']);
+            $table->unsignedBigInteger('project_id');
+            $table->unsignedBigInteger('user_id');
+            $table->string('status', 255);
             $table->text('comment');
             $table->timestamps();
 
-            $table->index('project_id')->foreign('project_id')->references('id')->on('projects');
-            $table->index('user_id')->foreign('user_id')->references('id')->on('users');
+            $table->foreign('project_id')->references('id')->on('projects');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

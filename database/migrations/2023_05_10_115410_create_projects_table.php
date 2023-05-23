@@ -15,25 +15,18 @@ class CreateProjectsTable extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
+            $table->string('name', 255);
             $table->date('due_date');
-            $table->text('summary')->nullable();
-            $table->enum('status', [
-                                    'overdue', 
-                                    'in-progress', 
-                                    'internal-approval', 
-                                    'new-version-sent',
-                                    'new-version-recived',
-                                    'to-sign'
-                                ]);
-            $table->integer('document_id');
-            $table->integer('reminder_id');
-            $table->integer('team_id');
+            $table->text('summary');
+            $table->string('status', 255);
+            $table->unsignedBigInteger('document_id');
+            $table->unsignedBigInteger('reminder_id');
+            $table->unsignedBigInteger('team_id');
             $table->timestamps();
 
-            $table->index('document_id')->foreign('document_id')->references('id')->on('documents');
-            $table->index('reminder_id')->foreign('reminder_id')->references('id')->on('reminders');
-            $table->index('team_id')->foreign('team_id')->references('id')->on('teams');
+            $table->foreign('document_id')->references('id')->on('documents');
+            $table->foreign('reminder_id')->references('id')->on('reminds');
+            $table->foreign('team_id')->references('id')->on('teams');
         });
     }
 

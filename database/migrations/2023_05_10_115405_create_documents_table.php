@@ -16,18 +16,18 @@ class CreateDocumentsTable extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name');
+            $table->string('name', 255);
             
-            $table->integer('type_id')->unsigned();
-            // $table->foreign('type_id')->references('id')->on('document_types');
+            $table->unsignedBigInteger('type_id');
+            $table->foreign('type_id')->references('id')->on('document_types');
 
-            $table->integer('user_id');
-            // $table->foreign('user_id')->references('id')->on('users');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
 
-            $table->integer('category_id');
-            // $table->foreign('category_id')->references('id')->on('categories');
+            $table->unsignedBigInteger('category_id');
+            $table->foreign('category_id')->references('id')->on('categories');
 
-            $table->string('path');
+            $table->string('path', 255);
             $table->boolean('need_to_approve')->default(false);
 
             $table->timestamps();

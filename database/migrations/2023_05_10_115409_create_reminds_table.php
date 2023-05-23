@@ -15,8 +15,8 @@ class CreateRemindsTable extends Migration
     {
         Schema::create('reminds', function (Blueprint $table) {
             $table->id();
-            $table->enum('repeat', ['every hour','every 5 hour','every day','every monday','every month']);
-            $table->enum('priority', ['Low','Medium','High']);
+            $table->string('repeat', 255);
+            $table->string('priority', 255);
             $table->timestamps();
         });
     }

@@ -33,7 +33,7 @@ class SuccessfullySignUp extends Mailable
     public function build()
     {
         return $this
-            ->subject("Successfully SignUp")
+            ->subject("SMVRT LEGAL: Please Verify Your Account")
             ->markdown('emails.successfully-signup', ['link' => $this->link, 'email' => $this->email]);
     }
 }

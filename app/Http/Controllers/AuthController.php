@@ -34,6 +34,14 @@ class AuthController extends Controller
         ]);
         $credentials = $request->only('email', 'password');
 
+        $exist = User::where('email', $request->input('email'))->first();
+        if ( ! $exist) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'There is not an account registered with this email account. Please check the email address or <a class="text-[#1860CC] !text-[10px] underline underline-offset-2" href="/signup">set up your account</a>'
+            ], 401);
+        }
+
         $token = Auth::attempt($credentials);
         if (!$token) {
             return response()->json([
@@ -97,11 +105,25 @@ class AuthController extends Controller
     public function register(Request $request) {
         $request->validate([
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
+            'password' => [
+                'required',
+                'string',
+                'min:6',             // must be at least 10 characters in length
+                'regex:/[a-z]/',      // must contain at least one lowercase letter
+                'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                'regex:/[0-9]/',      // must contain at least one digit
+                'regex:/[@$!%*#?&]/', // must contain a special character
+            ],
             'team' => 'string'
         ], [
             'unique' => 'This email address is already registered. 
-                Please proceed to the <a class="text-[#1860CC] !text-[14px] underline underline-offset-2" href="/signin">Sign In</a> page to login or click <a href="/forgot" class="text-[#1860CC] !text-[14px] underline underline-offset-2">Forgot Password</a> to reset your password.'
+                Please proceed to the <a class="text-[#1860CC] !text-[14px] underline underline-offset-2" href="/signin">Sign In</a> page to login or click <a href="/forgot" class="text-[#1860CC] !text-[14px] underline underline-offset-2">Forgot Password</a> to reset your password.',
+            'regex' => '<ul>
+                    <li>An English uppercase character (A-Z)</li>
+                    <li>An English lowercase character (a-z)</li>
+                    <li>A number (0-9) and/or symbol (such as !, #, or %)</li>
+                </ul>
+            '
         ]);
 
         $user = User::create([
@@ -187,7 +209,23 @@ class AuthController extends Controller
         $request->validate([
             'hash' => 'string',
             'email' => 'string|email',
-            'password' => 'required|string|min:6'
+            'password' => [
+                'required',
+                'string',
+                'min:6',             // must be at least 10 characters in length
+                'regex:/[a-z]/',      // must contain at least one lowercase letter
+                'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                'regex:/[0-9]/',      // must contain at least one digit
+                'regex:/[@$!%*#?&]/', // must contain a special character
+            ]
+        ],
+        [
+            'regex' => '<ul>
+                            <li>An English uppercase character (A-Z)</li>
+                            <li>An English lowercase character (a-z)</li>
+                            <li>A number (0-9) and/or symbol (such as !, #, or %)</li>
+                        </ul>
+                    '
         ]);
 
         if ($request->input('hash')) {

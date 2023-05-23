@@ -33,7 +33,7 @@ class ForgotPassword extends Mailable
     public function build()
     {
         return $this
-            ->subject("Reset password")
+            ->subject("SMVRT LEGAL: Reset Password")
             ->markdown('emails.forgot-password', ['link' => $this->link, 'email' => $this->email]);
     }
 }

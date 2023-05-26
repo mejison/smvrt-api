@@ -20,8 +20,24 @@ class RoleSeeder extends Seeder
                 'slug' => 'owner'
             ],
             [
+                'name' => "Lead",
+                'slug' => 'lead'
+            ],
+            [
                 'name' => "Viewer",
                 'slug' => 'viewer'
+            ],
+            [
+                'name' => "Editor",
+                'slug' => 'editor'
+            ],
+            [
+                'name' => "Approver",
+                'slug' => 'approver'
+            ],
+            [
+                'name' => "Signatory",
+                'slug' => 'signatory'
             ],
         ];
 

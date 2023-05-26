@@ -7,11 +7,27 @@ use Illuminate\Validation\Rule;
 use App\Models\Role;
 use App\Models\TeamMember;
 
+
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ChangeEmailAddress;
+use App\Models\User;
+
 class ProfileController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => []]);
+        $this->middleware('auth:api', ['except' => ['confirm_email']]);
+    }
+
+    public function confirm_email(Request $request, $hash, $email) {
+        $user = User::whereRaw('md5(email) = "' . $hash . '"')->first();
+           
+        if ($user) {
+            $user->email = $email;
+            $user->save();
+        }
+
+        return redirect($request->input('redirect'));
     }
 
     public function update(Request $request) {
@@ -34,6 +50,17 @@ class ProfileController extends Controller
             $user->avatar = $request->file('avatar')->store('public/avatars');
         }
 
+        if ($request->input('email') != $user->email) {
+            $redirect = $request->input('redirect');
+            try {
+                $link =  url("/") . "/user/confirm-email/" .md5($user->email) . "/" .  $request->input('email') . "?redirect=" . $redirect;
+                Mail::to($request->email)
+                    ->send(new ChangeEmailAddress($link, $request->email));
+            } catch (\Exeption $e) {
+                // ...
+            }
+        }
+
         if ( ! $user) {
             return response()->json([
                 'status' => 'error',
@@ -45,7 +72,7 @@ class ProfileController extends Controller
         $user->fname = $request->input('fname');
         $user->lname = $request->input('lname');
         $user->phone = $request->input('phone');
-        $user->email = $request->input('email');
+        // $user->email = $request->input('email');
         $user->save();
         
         return response()->json([

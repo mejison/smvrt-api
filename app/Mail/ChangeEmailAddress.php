@@ -7,22 +7,22 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class InvintationSignUp extends Mailable
+class ChangeEmailAddress extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $user;
-    public $link;
+    protected $link;
+    protected $email;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($user, $link)
+    public function __construct($link, $email)
     {
-        $this->user = $user;
         $this->link = $link;
+        $this->email = $email;
     }
 
     /**
@@ -33,7 +33,7 @@ class InvintationSignUp extends Mailable
     public function build()
     {
         return $this
-            ->subject("SMVRT LEGAL: Sign up by invitation")
-            ->markdown('emails.invintation-signup', ['from' => $this->user, 'link' => $this->link]);
+            ->subject("SMVRT LEGAL: Please confirm your email change")
+            ->markdown('emails.change-email-address', ['email' => $this->email, 'link' => $this->link]);
     }
 }

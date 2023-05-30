@@ -132,6 +132,19 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $default = [
+            'assignee_changes' => true, 
+            'status_cahnges' => true, 
+            'tasks_assigned_to_me' => true,
+            'document_edited' => true,
+            'new_version_published' => true,
+            'due_date_changes' => true,
+            'due_date_overdue' => true,
+            'before_due_date_reminder' => true
+        ];
+
+        $user->settings()->create($default);
+
         if ($request->input('team')) {
             $team = Team::whereRaw('md5(id) = "' . $request->input('team') . '"')->first();
             if ($team) {

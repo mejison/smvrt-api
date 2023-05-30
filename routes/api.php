@@ -25,7 +25,7 @@ Route::get('/auth/google/redirect', [App\Http\Controllers\AuthController::class,
 
 /* profile */
 Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('update');
-
+Route::post('/profile/password-reset', [App\Http\Controllers\ProfileController::class, 'reset_password'])->name('reset_password');
 /* settings */
 Route::get('/profile/settings', [App\Http\Controllers\ProfileController::class, 'get_settings'])->name('get-settings');
 Route::post('/profile/settings', [App\Http\Controllers\ProfileController::class, 'update_settings'])->name('update-settings');

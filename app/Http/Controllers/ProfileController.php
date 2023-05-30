@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Hash;
+ 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Role;
@@ -32,6 +34,9 @@ class ProfileController extends Controller
 
     public function update(Request $request) {
         $user = auth()->user();
+
+        $oldemail = $user->email;
+        $newemail = $request->input('email');
         
         $request->validate([            
             'fname' => 'string',
@@ -74,6 +79,14 @@ class ProfileController extends Controller
         $user->phone = $request->input('phone');
         // $user->email = $request->input('email');
         $user->save();
+
+        if ($newemail != $oldemail) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $user,
+                'message' => 'You will receive a confirmation email update',
+            ]);
+        }
         
         return response()->json([
             'status' => 'success',
@@ -160,6 +173,60 @@ class ProfileController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $teams,
+        ]);
+    }
+
+    public function reset_password(Request $request) {
+        $user = null;
+
+        if ($request->input('email')) {
+            $user = User::where('email', $request->input('email'))->first();
+        }
+
+        if ( ! Hash::check($request->input('oldpassword'), $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Old password is not correct',
+            ], 400);
+        }
+
+        if ( ! $user) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'User not found!',
+            ], 401);
+        }
+
+        $request->validate([
+            'email' => 'string|email',
+            'oldpassword' => 'string|required',
+            'password' => [
+                'required',
+                'string',
+                'min:6',             // must be at least 10 characters in length
+                'regex:/[a-z]/',      // must contain at least one lowercase letter
+                'regex:/[A-Z]/',      // must contain at least one uppercase letter
+                'regex:/[0-9]/',      // must contain at least one digit
+                'regex:/[@$!%*#?&]/', // must contain a special character
+            ]
+        ],
+        [
+            'regex' => '<ul>
+                            <li>An English uppercase character (A-Z)</li>
+                            <li>An English lowercase character (a-z)</li>
+                            <li>A number (0-9) and/or symbol (such as !, #, or %)</li>
+                        </ul>
+                    '
+        ]);
+
+        
+
+        $user->password = bcrypt($request->input('password'));
+        $user->save();
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'The password successfully updated',
         ]);
     }
 }

@@ -30,6 +30,8 @@ class NotificationController extends Controller
                 $user->notify(new AcceptRequestToChangeRole($target_role, $target_team));
             }
 
+            auth()->user()->unreadNotifications->where('id', $notification->id)->markAsRead();
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Successfully accepted',
@@ -38,17 +40,31 @@ class NotificationController extends Controller
     }
 
     public function reject(Request $request, Notification $notification) {
-        $from = $notification->data->from ?? false;
-        $role = $notification->data->role ?? false;
-        $team = $notification->data->team ?? false;
+        if (in_array($notification->type, ['App\Notifications\RequestsToChangeRole'])) {
+            $from = $notification->data->from ?? false;
+            $role = $notification->data->role ?? false;
+            $team = $notification->data->team ?? false;
 
-        $user = User::where('email', $from->email)->first();
-        if ($user) {
-            $user->notify(new RejectRequestToChangeRole($role, $team));
+            $user = User::where('email', $from->email)->first();
+            if ($user) {
+                $user->notify(new RejectRequestToChangeRole($role, $team));
+            }
+
+            auth()->user()->unreadNotifications->where('id', $notification->id)->markAsRead();
         }
+        
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully rejected',
+        ], 200);
+    }
+
+    public function read(Request $request, Notification $notification) {
+        auth()->user()->unreadNotifications->where('id', $notification->id)->markAsRead();
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Successfully readed',
         ], 200);
     }
 }

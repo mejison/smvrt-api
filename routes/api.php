@@ -48,3 +48,4 @@ Route::put('/project/{project}/member/{user}/role', [App\Http\Controllers\Projec
 /* notifications */ 
 Route::post('/notification/{notification}/accept', [App\Http\Controllers\NotificationController::class, 'accept'])->name('notification_accept');
 Route::post('/notification/{notification}/reject', [App\Http\Controllers\NotificationController::class, 'reject'])->name('notification_reject');
+Route::post('/notification/{notification}/read', [App\Http\Controllers\NotificationController::class, 'read'])->name('notification_read');

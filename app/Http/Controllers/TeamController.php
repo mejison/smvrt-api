@@ -222,4 +222,8 @@ class TeamController extends Controller
 
         return redirect($request->input('redirect'));
     }
+
+    public function request_to_change_role(Request $request, User $user) {
+        
+    }
 }

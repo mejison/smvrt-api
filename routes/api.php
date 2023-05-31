@@ -26,6 +26,8 @@ Route::get('/auth/google/redirect', [App\Http\Controllers\AuthController::class,
 /* profile */
 Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('update');
 Route::post('/profile/password-reset', [App\Http\Controllers\ProfileController::class, 'reset_password'])->name('reset_password');
+Route::get('/profile/notifications', [App\Http\Controllers\ProfileController::class, 'get_last_notifications'])->name('get_last_notifications');
+
 /* settings */
 Route::get('/profile/settings', [App\Http\Controllers\ProfileController::class, 'get_settings'])->name('get-settings');
 Route::post('/profile/settings', [App\Http\Controllers\ProfileController::class, 'update_settings'])->name('update-settings');
@@ -39,3 +41,10 @@ Route::delete('/team/{team}/member/remove', [App\Http\Controllers\TeamController
 Route::put('/team/{team}/member/update', [App\Http\Controllers\TeamController::class, 'member_update'])->name('member-update');
 Route::post('/team/{team}/member/add', [App\Http\Controllers\TeamController::class, 'add_member'])->name('add-member');
 Route::post('/team', [App\Http\Controllers\TeamController::class, 'create_team'])->name('create-team');
+
+/* projects */
+Route::put('/project/{project}/member/{user}/role', [App\Http\Controllers\ProjectController::class, 'requests_to_change_role'])->name('requests_to_change_role');
+
+/* notifications */
+Route::post('/notification/{notification}/accept', [App\Http\Controllers\NotificationController::class, 'accept'])->name('notification_accept');
+Route::post('/notification/{notification}/reject', [App\Http\Controllers\NotificationController::class, 'reject'])->name('notification_reject');

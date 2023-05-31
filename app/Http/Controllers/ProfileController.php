@@ -229,4 +229,12 @@ class ProfileController extends Controller
             'message' => 'The password successfully updated',
         ]);
     }
+
+    public function get_last_notifications(Request $reqeust) {
+        $user = auth()->user();
+
+        return response()->json([
+            'data' => $user->notifications
+        ], 200);
+    }
 }

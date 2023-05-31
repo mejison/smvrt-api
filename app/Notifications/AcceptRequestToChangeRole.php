@@ -7,25 +7,22 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\BroadcastMessage;
- 
 
-class RequestsToChangeRole extends Notification
+class AcceptRequestToChangeRole extends Notification
 {
     use Queueable;
 
-    protected $role;
-    protected $from;
     protected $team;
-    
+    protected $role;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($role, $from, $team)
+    public function __construct($role, $team)
     {
         $this->role = $role;
-        $this->from = $from;
         $this->team = $team;
     }
 
@@ -61,11 +58,9 @@ class RequestsToChangeRole extends Notification
     {
         return [
             'role' => $this->role,
-            'from' => $this->from,
             'team' => $this->team,
-            'message' => "<strong>" . ($this->from->fname  ? $this->from->fname . ' ' . $this->from->lname : $this->from->email) . 
-             "</strong> asked to change his role to <strong>" . $this->role->name . "</strong>",
-            'confirm' => true,
+            'message' => "Your role has been changed to <strong>" . $this->role->name . "</strong>",
+            'confirm' => false,
         ];
     }
 }

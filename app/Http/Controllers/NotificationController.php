@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Notification;
 use App\Models\TeamMember;
+use App\Notifications\AcceptRequestToChangeRole;
+use App\Notifications\RejectRequestToChangeRole;
+use App\Models\User;
 
 class NotificationController extends Controller
 {
@@ -14,16 +17,18 @@ class NotificationController extends Controller
     }
 
     public function accept(Request $request, Notification $notification) {
-        $user = auth()->user();
-
         if (in_array($notification->type, ['App\Notifications\RequestsToChangeRole'])) {
-            $data = $notification->data;
-            $target_user = $data->data->from ?? false;
-            $target_role = $data->data->role ?? false;
-            $target_team = $data->data->team ?? false;
+            $target_user = $notification->data->from ?? false;
+            $target_role = $notification->data->role ?? false;
+            $target_team = $notification->data->team ?? false;
             
             TeamMember::where('team_id', $target_team->id)->where('user_id', $target_user->id)
                 ->update(['role_id' => $target_role->id]);
+            
+            $user = User::where('email', $target_user->email)->first();
+            if ($user) {
+                $user->notify(new AcceptRequestToChangeRole($target_role, $target_team));
+            }
 
             return response()->json([
                 'status' => 'success',
@@ -33,7 +38,14 @@ class NotificationController extends Controller
     }
 
     public function reject(Request $request, Notification $notification) {
+        $from = $notification->data->from ?? false;
+        $role = $notification->data->role ?? false;
+        $team = $notification->data->team ?? false;
 
+        $user = User::where('email', $from->email)->first();
+        if ($user) {
+            $user->notify(new RejectRequestToChangeRole($role, $team));
+        }
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully rejected',

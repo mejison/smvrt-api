@@ -45,6 +45,6 @@ Route::post('/team', [App\Http\Controllers\TeamController::class, 'create_team']
 /* projects */
 Route::put('/project/{project}/member/{user}/role', [App\Http\Controllers\ProjectController::class, 'requests_to_change_role'])->name('requests_to_change_role');
 
-/* notifications */
+/* notifications */ 
 Route::post('/notification/{notification}/accept', [App\Http\Controllers\NotificationController::class, 'accept'])->name('notification_accept');
 Route::post('/notification/{notification}/reject', [App\Http\Controllers\NotificationController::class, 'reject'])->name('notification_reject');

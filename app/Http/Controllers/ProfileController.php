@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Hash;
- 
+ use Carbon\Carbon;
+ use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Role;
@@ -234,7 +235,10 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         return response()->json([
-            'data' => $user->notifications
+            'data' => $user->notifications->map(function($item) {
+                $item->{'created_at_humans'} = Carbon::now()->sub($item->created_at)->diffForHumans();
+                return $item;
+            })
         ], 200);
     }
 }

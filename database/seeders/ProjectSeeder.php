@@ -75,7 +75,7 @@ class ProjectSeeder extends Seeder
                     $user = User::create([
                         'email' => $member,
                         'password' => bcrypt('123456'),
-                        'name' => ' ',
+                        'name' => null,
                         'email_verified_at' => now(),
                     ]);
                 }
@@ -83,8 +83,8 @@ class ProjectSeeder extends Seeder
                 $team->members()->attach($user, [
                     'user_id' => $user->id, 
                     'role_id' => $index + 1,
-                    'name' => '', 
-                    'email' => ''
+                    'name' => 'test' . $index + 1, 
+                    'email' => $user->email
                 ]);
             });
 

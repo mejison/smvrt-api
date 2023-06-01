@@ -16,12 +16,12 @@ class RoleSeeder extends Seeder
     {
         $data = [
             [
-                'name' => 'Owner',
-                'slug' => 'owner'
-            ],
-            [
                 'name' => "Lead",
                 'slug' => 'lead'
+            ],
+            [
+                'name' => 'Owner',
+                'slug' => 'owner'
             ],
             [
                 'name' => "Viewer",

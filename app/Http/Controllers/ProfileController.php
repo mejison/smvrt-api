@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Hash;
- use Carbon\Carbon;
- use Carbon\CarbonInterval;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Role;
 use App\Models\TeamMember;
-
-
+use App\Models\Team;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ChangeEmailAddress;
 use App\Models\User;
@@ -239,6 +237,17 @@ class ProfileController extends Controller
                 $item->{'created_at_humans'} = Carbon::now()->sub($item->created_at)->diffForHumans();
                 return $item;
             })
+        ], 200);
+    }
+
+    public function projects(Request $request) {
+        $user = auth()->user();
+        $teams = $user->teams()->with('project.team.members')->get();
+       
+        $projects = $teams->pluck('project');
+
+        return response()->json([
+            'data' => $projects,
         ], 200);
     }
 }

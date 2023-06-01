@@ -27,6 +27,7 @@ Route::get('/auth/google/redirect', [App\Http\Controllers\AuthController::class,
 Route::post('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('update');
 Route::post('/profile/password-reset', [App\Http\Controllers\ProfileController::class, 'reset_password'])->name('reset_password');
 Route::get('/profile/notifications', [App\Http\Controllers\ProfileController::class, 'get_last_notifications'])->name('get_last_notifications');
+Route::get('/profile/projects', [App\Http\Controllers\ProfileController::class, 'projects'])->name('get_projects');
 
 /* settings */
 Route::get('/profile/settings', [App\Http\Controllers\ProfileController::class, 'get_settings'])->name('get-settings');

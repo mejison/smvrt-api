@@ -7,6 +7,7 @@ use App\Models\Team;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Project;
+use App\Models\TeamMember;
 use App\Notifications\RequestsToChangeRole;
 
 class ProjectController extends Controller
@@ -25,14 +26,26 @@ class ProjectController extends Controller
         ]);
 
         $team = $project->team;
-        $owner = $project->team->members()->where('role_id', 1)->first();
+        $lead = $project->team->members()->where('role_id', 1)->first();
 
-        $role = Role::find($request->input('role'));
-        $owner->notify(new RequestsToChangeRole($role, $user, $team));
+        $roleTo = Role::find($request->input('role'));
+        if ($lead) {
+            $lead->notify(new RequestsToChangeRole($roleTo, $user, $team));
+    
+            $member = TeamMember::where('team_id', $team->id)->where('user_id', $user->id)->first();
+            $roleFrom = Role::find($member->role_id);
+            $leadName = $lead->fname && $lead->lname ? $lead->fname . ' ' . $lead->lname : $lead->email;
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Successfully notified',
-        ], 200);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Your request to udpate your role from "' . $roleFrom->name . '" to 
+                            "' . $roleTo->name . '" was sent to the project lead ' . $leadName . '. You will be notified when your role is updated.',
+            ], 200);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Lead not found'
+            ], 400);
+        }
     }
 }

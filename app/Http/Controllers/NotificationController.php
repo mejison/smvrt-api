@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\TeamMember;
 use App\Notifications\AcceptRequestToChangeRole;
 use App\Notifications\RejectRequestToChangeRole;
+use App\Notifications\RefreshNotifications;
 use App\Models\User;
 
 class NotificationController extends Controller
@@ -17,6 +18,8 @@ class NotificationController extends Controller
     }
 
     public function accept(Request $request, Notification $notification) {
+        $auth = auth()->user();
+
         if (in_array($notification->type, ['App\Notifications\RequestsToChangeRole'])) {
             $target_user = $notification->data->from ?? false;
             $target_role = $notification->data->role ?? false;
@@ -30,7 +33,8 @@ class NotificationController extends Controller
                 $user->notify(new AcceptRequestToChangeRole($target_role, $target_team));
             }
 
-            auth()->user()->unreadNotifications->where('id', $notification->id)->markAsRead();
+            $auth->unreadNotifications->where('id', $notification->id)->markAsRead();
+            $auth->notify(new RefreshNotifications());
 
             return response()->json([
                 'status' => 'success',
@@ -40,17 +44,19 @@ class NotificationController extends Controller
     }
 
     public function reject(Request $request, Notification $notification) {
+        $auth = auth()->user();
         if (in_array($notification->type, ['App\Notifications\RequestsToChangeRole'])) {
             $from = $notification->data->from ?? false;
             $role = $notification->data->role ?? false;
             $team = $notification->data->team ?? false;
 
+            $auth->unreadNotifications->where('id', $notification->id)->markAsRead();
+            $auth->notify(new RefreshNotifications());
+
             $user = User::where('email', $from->email)->first();
             if ($user) {
                 $user->notify(new RejectRequestToChangeRole($role, $team));
             }
-
-            auth()->user()->unreadNotifications->where('id', $notification->id)->markAsRead();
         }
         
         return response()->json([
@@ -60,7 +66,12 @@ class NotificationController extends Controller
     }
 
     public function read(Request $request, Notification $notification) {
-        auth()->user()->unreadNotifications->where('id', $notification->id)->markAsRead();
+        $user = auth()->user();
+
+        $user
+            ->unreadNotifications
+            ->where('id', $notification->id)
+            ->markAsRead();
         
         return response()->json([
             'status' => 'success',

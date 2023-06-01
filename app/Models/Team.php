@@ -13,4 +13,8 @@ class Team extends Model
     public function members() {
         return $this->belongsToMany(User::class, 'team_members', 'team_id', 'user_id')->withPivot('role_id', 'email', 'name', 'user_id');
     }
+
+    public function project() {
+        return $this->belongsTo(Project::class, 'id', 'team_id');
+    }
 }

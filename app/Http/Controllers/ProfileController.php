@@ -234,7 +234,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'data' => $user->notifications->map(function($item) {
-                $item->{'created_at_humans'} = Carbon::now()->sub($item->created_at)->diffForHumans();
+                $item->{'created_at_humans'} = $item->created_at->diffForHumans();
                 return $item;
             })
         ], 200);

@@ -33,7 +33,9 @@ class NotificationController extends Controller
                 $user->notify(new AcceptRequestToChangeRole($target_role, $target_team));
             }
 
-            $auth->unreadNotifications->where('id', $notification->id)->markAsRead();
+            $notification->read_at = now();
+            $notification->save();
+
             $auth->notify(new RefreshNotifications());
 
             return response()->json([
@@ -50,7 +52,10 @@ class NotificationController extends Controller
             $role = $notification->data->role ?? false;
             $team = $notification->data->team ?? false;
 
-            $auth->unreadNotifications->where('id', $notification->id)->markAsRead();
+            // $auth->unreadNotifications->where('id', $notification->id)->markAsRead();
+            $notification->read_at = now();
+            $notification->save();
+
             $auth->notify(new RefreshNotifications());
 
             $user = User::where('email', $from->email)->first();
@@ -68,10 +73,12 @@ class NotificationController extends Controller
     public function read(Request $request, Notification $notification) {
         $user = auth()->user();
 
-        $user
-            ->unreadNotifications
-            ->where('id', $notification->id)
-            ->markAsRead();
+        // $user
+        //     ->unreadNotifications
+        //     ->where('id', $notification->id)
+        //     ->markAsRead();
+        $notification->read_at = now();
+        $notification->save();
         
         return response()->json([
             'status' => 'success',

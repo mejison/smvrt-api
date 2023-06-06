@@ -43,9 +43,13 @@ Route::put('/team/{team}/member/update', [App\Http\Controllers\TeamController::c
 Route::post('/team/{team}/member/add', [App\Http\Controllers\TeamController::class, 'add_member'])->name('add-member');
 Route::post('/team', [App\Http\Controllers\TeamController::class, 'create_team'])->name('create-team');
 
+/* documents */
+Route::get('/document/types', [App\Http\Controllers\DocumentController::class, 'get_types'])->name('get-types');
+
 /* projects */
 Route::put('/project/{project}/member/{user}/role', [App\Http\Controllers\ProjectController::class, 'requests_to_change_role'])->name('requests_to_change_role');
-
+Route::post('/project', [App\Http\Controllers\ProjectController::class, 'create'])->name('project_create');
+Route::get('/project/categories', [App\Http\Controllers\ProjectController::class, 'get_categories'])->name('get_categories');
 /* notifications */ 
 Route::post('/notification/{notification}/accept', [App\Http\Controllers\NotificationController::class, 'accept'])->name('notification_accept');
 Route::post('/notification/{notification}/reject', [App\Http\Controllers\NotificationController::class, 'reject'])->name('notification_reject');

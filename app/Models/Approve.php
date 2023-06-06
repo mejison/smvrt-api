@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Approve extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['name', 'email', 'document_id', 'is_final'];
 }

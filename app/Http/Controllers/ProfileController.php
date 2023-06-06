@@ -244,7 +244,7 @@ class ProfileController extends Controller
         $user = auth()->user();
         $teams = $user->teams()->with('project.team.members')->get();
        
-        $projects = $teams->pluck('project');
+        $projects = $teams->pluck('project')->filter()->all();
 
         return response()->json([
             'data' => $projects,

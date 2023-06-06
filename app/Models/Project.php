@@ -9,6 +9,8 @@ class Project extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name', 'document_id', 'due_date', 'summary', 'status', 'reminder_id', 'team_id'];
+
     public function team() {
         return $this->hasOne(Team::class, 'id', 'team_id');
     }

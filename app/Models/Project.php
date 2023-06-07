@@ -14,4 +14,8 @@ class Project extends Model
     public function team() {
         return $this->hasOne(Team::class, 'id', 'team_id');
     }
+
+    public function document() {
+        return $this->hasOne(Document::class, 'id', 'document_id');
+    }
 }

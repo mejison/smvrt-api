@@ -120,4 +120,10 @@ class ProjectController extends Controller
             'data' => $categories,
         ]);
     }
+
+    public function get(Request $request, Project $project) {
+        return response()->json([
+            'data' => $project->load(['document.type', 'document.category', 'team', 'team.members'])
+        ]);
+    }
 }

@@ -10,4 +10,12 @@ class Document extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'path', 'user_id', 'category_id', 'type_id'];
+
+    public function type() {
+        return $this->hasOne(DocumentType::class, 'id', 'type_id');
+    }
+
+    public function category() {
+        return $this->hasOne(Category::class, 'id', 'category_id');
+    }
 }

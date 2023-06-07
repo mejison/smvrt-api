@@ -242,7 +242,7 @@ class ProfileController extends Controller
 
     public function projects(Request $request) {
         $user = auth()->user();
-        $teams = $user->teams()->with('project.team.members')->get();
+        $teams = $user->teams()->with('project.document.type', 'project.team.members')->get();
        
         $projects = $teams->pluck('project')->filter()->all();
 

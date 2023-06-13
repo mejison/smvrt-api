@@ -16,9 +16,10 @@ class DocumentTypeSeeder extends Seeder
     {
         DocumentType::truncate();
         $data = [
-            'NDA #1',
-            'NDA #2',
-            'NDA #3',
+            'NDA',
+            'DPA',
+            'Job offer latter',
+            'MSA'
         ];
         collect($data)->each(function($type) {
             DocumentType::create([

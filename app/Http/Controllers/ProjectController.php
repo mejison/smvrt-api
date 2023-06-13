@@ -137,4 +137,49 @@ class ProjectController extends Controller
             }),
         ]);
     }
+
+    public function get_archived(Request $request) {
+        $filter = $request->only(['owner', 'date', 'team_id', 'document_id']);
+
+        $user = auth()->user();
+        $team_ids =  $user->teams()->get()->pluck('id');
+       
+        $projects = Project::query();
+        if ( ! empty($filter['owner'])) {
+            if ($filter['owner'] == 'a-z') {
+                $projects = $projects->orderBy('name', 'asc');
+            } else if ($filter['owner'] == 'z-a') {
+                $projects = $projects->orderBy('name', 'desc');
+            }
+        }
+
+        if ( ! empty($filter['date'])) {
+            if ($filter['date'] == 'newest-first') {
+                $projects = $projects->orderBy('name', 'asc');
+            } else if ($filter['date'] == 'oldest-first') {
+                $projects = $projects->orderBy('name', 'desc');
+            }
+        }
+
+        if ( ! empty($filter['document_id'])) {
+            $ids = explode(',', $filter['document_id']);
+            if (count($ids)) {
+                $projects = $projects->whereHas('document', function($q) use ($ids) {
+                    return $q->whereHas('type', function($q2) use ($ids) {
+                        return $q2->whereIn('id', $ids);
+                    });
+                });
+            }
+        }
+
+        if ( ! empty($filter['team_id'])) {
+            $projects = $projects->where('team_id', $filter['team_id']);
+        }
+        
+        $projects = $projects->with(['team', 'document.type'])->whereIn('team_id', $team_ids)->get();
+
+        return response()->json([
+            'data' => $projects,
+        ]);
+    }
 }

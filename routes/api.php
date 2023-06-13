@@ -47,6 +47,7 @@ Route::post('/team', [App\Http\Controllers\TeamController::class, 'create_team']
 Route::get('/document/types', [App\Http\Controllers\DocumentController::class, 'get_types'])->name('get-types');
 
 /* projects */
+Route::get('/project/archived', [App\Http\Controllers\ProjectController::class, 'get_archived'])->name('get-archived-project');
 Route::get('/project/{project}', [App\Http\Controllers\ProjectController::class, 'get'])->name('get-one');
 Route::put('/project/{project}/member/{user}/role', [App\Http\Controllers\ProjectController::class, 'requests_to_change_role'])->name('requests-to-change-role');
 Route::post('/project', [App\Http\Controllers\ProjectController::class, 'create'])->name('project_create');

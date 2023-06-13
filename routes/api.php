@@ -47,12 +47,13 @@ Route::post('/team', [App\Http\Controllers\TeamController::class, 'create_team']
 Route::get('/document/types', [App\Http\Controllers\DocumentController::class, 'get_types'])->name('get-types');
 
 /* projects */
-Route::get('/project/{project}', [App\Http\Controllers\ProjectController::class, 'get'])->name('get_one');
-Route::put('/project/{project}/member/{user}/role', [App\Http\Controllers\ProjectController::class, 'requests_to_change_role'])->name('requests_to_change_role');
+Route::get('/project/{project}', [App\Http\Controllers\ProjectController::class, 'get'])->name('get-one');
+Route::put('/project/{project}/member/{user}/role', [App\Http\Controllers\ProjectController::class, 'requests_to_change_role'])->name('requests-to-change-role');
 Route::post('/project', [App\Http\Controllers\ProjectController::class, 'create'])->name('project_create');
-Route::get('/project/categories', [App\Http\Controllers\ProjectController::class, 'get_categories'])->name('get_categories');
+Route::get('/project/categories', [App\Http\Controllers\ProjectController::class, 'get_categories'])->name('get-categories');
+Route::get('/project/{project}/notifications', [App\Http\Controllers\ProjectController::class, 'notifications'])->name('get-project-notifications');
 
 /* notifications */ 
-Route::post('/notification/{notification}/accept', [App\Http\Controllers\NotificationController::class, 'accept'])->name('notification_accept');
-Route::post('/notification/{notification}/reject', [App\Http\Controllers\NotificationController::class, 'reject'])->name('notification_reject');
-Route::post('/notification/{notification}/read', [App\Http\Controllers\NotificationController::class, 'read'])->name('notification_read');
+Route::post('/notification/{notification}/accept', [App\Http\Controllers\NotificationController::class, 'accept'])->name('notification-accept');
+Route::post('/notification/{notification}/reject', [App\Http\Controllers\NotificationController::class, 'reject'])->name('notification-reject');
+Route::post('/notification/{notification}/read', [App\Http\Controllers\NotificationController::class, 'read'])->name('notification-read');

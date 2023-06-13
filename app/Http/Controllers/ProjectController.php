@@ -126,4 +126,15 @@ class ProjectController extends Controller
             'data' => $project->load(['document.type', 'document.category', 'team', 'team.members'])
         ]);
     }
+
+    public function notifications(Request $request, Project $project) {
+        $notifications = $project->notifications;
+
+        return response()->json([
+            'data' => $notifications->map(function($item) {
+                $item->{'created_at_humans'} = $item->created_at->diffForHumans();
+                return $item;
+            }),
+        ]);
+    }
 }

@@ -48,11 +48,11 @@ Route::get('/document/types', [App\Http\Controllers\DocumentController::class, '
 
 /* projects */
 Route::get('/project/archived', [App\Http\Controllers\ProjectController::class, 'get_archived'])->name('get-archived-project');
-Route::get('/project/{project}', [App\Http\Controllers\ProjectController::class, 'get'])->name('get-one');
+Route::get('/project/categories', [App\Http\Controllers\ProjectController::class, 'get_categories'])->name('get-categories');
 Route::put('/project/{project}/member/{user}/role', [App\Http\Controllers\ProjectController::class, 'requests_to_change_role'])->name('requests-to-change-role');
 Route::post('/project', [App\Http\Controllers\ProjectController::class, 'create'])->name('project_create');
-Route::get('/project/categories', [App\Http\Controllers\ProjectController::class, 'get_categories'])->name('get-categories');
 Route::get('/project/{project}/notifications', [App\Http\Controllers\ProjectController::class, 'notifications'])->name('get-project-notifications');
+Route::get('/project/{project}', [App\Http\Controllers\ProjectController::class, 'get'])->name('get-one');
 
 /* notifications */ 
 Route::post('/notification/{notification}/accept', [App\Http\Controllers\NotificationController::class, 'accept'])->name('notification-accept');

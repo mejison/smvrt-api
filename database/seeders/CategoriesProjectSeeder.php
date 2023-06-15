@@ -17,12 +17,9 @@ class CategoriesProjectSeeder extends Seeder
         Category::truncate();
 
         $data = [
-            'Category #1',
-            'Category #2',
-            'Category #3',
-            'Category #4',
-            'Category #5',
-            'Category #6',
+            'Business',
+            'Music',
+            'Sales',
         ];
 
         collect($data)->each(function($category) {

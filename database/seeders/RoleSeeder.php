@@ -31,10 +31,10 @@ class RoleSeeder extends Seeder
                 'name' => "Editor",
                 'slug' => 'editor'
             ],
-            [
-                'name' => "Approver",
-                'slug' => 'approver'
-            ],
+            // [
+            //     'name' => "Approver",
+            //     'slug' => 'approver'
+            // ],
             [
                 'name' => "Signatory",
                 'slug' => 'signatory'

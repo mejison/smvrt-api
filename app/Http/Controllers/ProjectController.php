@@ -64,8 +64,8 @@ class ProjectController extends Controller
             'members' => '',
             
             'documentname' => 'required',
-            'category' => 'required|integer',
-            'type' => 'required|integer',
+            'category' => 'required',
+            'type' => 'required',
             'document' => 'required',
 
             'final_approver' => '',
@@ -78,8 +78,10 @@ class ProjectController extends Controller
         $document = Document::create([
             'name' => $request->input('documentname'),
             'user_id' => $user->id,
-            'type_id' => $request->input('type'),
-            'category_id' => $request->input('category'),
+            'type_id' => $request->input('type_id') ?? 0,
+            'category_id' => $request->input('category_id') ?? 0,
+            'type' => $request->input('type'),
+            'category' => $request->input('category'),
             'path' => $documentPath,
         ]);
 

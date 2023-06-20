@@ -30,20 +30,22 @@ class ProjectController extends Controller
         ]);
 
         $team = $project->team;
-        $lead = $project->team->members()->where('role_id', 1)->first();
+        $leads = $project->team->members()->where('role_id', 1)->get();
 
         $roleTo = Role::find($request->input('role'));
-        if ($lead) {
-            $lead->notify(new RequestsToChangeRole($roleTo, $user, $team));
-    
+        if (count($leads)) {
             $member = TeamMember::where('team_id', $team->id)->where('user_id', $user->id)->first();
             $roleFrom = Role::find($member->role_id);
-            $leadName = $lead->fname && $lead->lname ? $lead->fname . ' ' . $lead->lname : $lead->email;
+            $leadNames = [];
+            collect($leads)->each(function($lead) use ($roleTo, $user, $team, &$leadNames) {
+                $lead->notify(new RequestsToChangeRole($roleTo, $user, $team));        
+                $leadNames []= $lead->fname && $lead->lname ? $lead->fname . ' ' . $lead->lname : $lead->email;
+            });
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Your request to udpate your role from "' . $roleFrom->name . '" to 
-                            "' . $roleTo->name . '" was sent to the project lead ' . $leadName . '. You will be notified when your role is updated.',
+                            "' . $roleTo->name . '" was sent to the project lead ' . implode(',', $leadNames) . '. You will be notified when your role is updated.',
             ], 200);
         } else {
             return response()->json([

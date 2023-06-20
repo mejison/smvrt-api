@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Role extends Model
 {
     use HasFactory;
+
+    static public function getIdRoleBySlug($slug) {
+        $role = self::where('slug', $slug)->first();
+        return $role ? $role->id : false;
+    }
 }

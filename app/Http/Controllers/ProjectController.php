@@ -70,10 +70,34 @@ class ProjectController extends Controller
 
             'final_approver' => '',
             'approvers' => '',
+            'signatories' => '',
             'save_for_future' => 'boolean'
         ]);
 
         $documentPath = $request->file('document')->store('/public/documents');
+
+        $team = ! empty( $request->team) ? json_decode($request->team) : false;
+        $team = ! empty($team) ? Team::find($team->id) : $team;
+        
+        if ($team && $request->input('signatories') && $request->input('save_for_future')) {
+            foreach(collect($request->input('signatories')) as $signatory) {
+                $signatory = json_decode($signatory);
+                $email = $signatory->email;
+                $name = $signatory->name;
+
+                $roleSignatureId = Role::getIdRoleBySlug('signatory');
+                $exist = TeamMember::where('email', $email)->where('role_id', $roleSignatureId)->first();
+                if ( ! $exist) {
+                    TeamMember::create([
+                        'team_id' => $team->id,
+                        'email' => $email,
+                        'name' => $name,
+                        'user_id' => 0,
+                        'role_id' => $roleSignatureId,
+                    ]);
+                }
+            }
+        }
 
         $document = Document::create([
             'name' => $request->input('documentname'),

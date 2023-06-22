@@ -59,3 +59,6 @@ Route::get('/project/{project}', [App\Http\Controllers\ProjectController::class,
 Route::post('/notification/{notification}/accept', [App\Http\Controllers\NotificationController::class, 'accept'])->name('notification-accept');
 Route::post('/notification/{notification}/reject', [App\Http\Controllers\NotificationController::class, 'reject'])->name('notification-reject');
 Route::post('/notification/{notification}/read', [App\Http\Controllers\NotificationController::class, 'read'])->name('notification-read');
+
+/* statistics */
+Route::get('/statistics', [App\Http\Controllers\StatisticsController::class, 'get'])->name('get');

@@ -12,7 +12,8 @@ use App\Models\Team;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ChangeEmailAddress;
 use App\Models\User;
-
+use Illuminate\Support\Str;
+ 
 class ProfileController extends Controller
 {
     public function __construct()
@@ -241,13 +242,45 @@ class ProfileController extends Controller
     }
 
     public function projects(Request $request) {
+        $sortBy = $request->input('sortBy');
+        $sortValue = $request->input('sortValue');
+
         $user = auth()->user();
         $teams = $user->teams()->with('project.document.type', 'project.team.members')->get();
        
-        $projects = $teams->pluck('project')->filter()->all();
+        $projects = $teams->pluck('project')->filter();
+
+        $projects = $projects->sortBy(function($item) use ($sortBy, $sortValue) {
+        
+            if ($sortBy == 'name') {
+                return $item->name;
+            }
+
+            if ($sortBy == 'date') {
+                return $item->duedate;
+            }
+           
+            if ($sortBy == 'status') {
+                return Str::of(strtolower($item->status))->kebab() != $sortValue;
+            }
+
+            if ($sortBy == 'team') {
+                return $item->team->id != $sortValue;
+            }
+
+            if ($sortBy == 'doctype') {
+                return ! empty($item->document->type->id) && $item->document->type->id != $sortValue;
+            }
+            
+            return true;
+        });
+
+        if (in_array($sortValue, ['newest-first', 'z-a'])) {
+            $projects = $projects->reverse();
+        }
 
         return response()->json([
-            'data' => $projects,
+            'data' => $projects->values()->all(),
         ], 200);
     }
 }

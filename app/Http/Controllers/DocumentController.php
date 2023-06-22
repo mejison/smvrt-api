@@ -13,4 +13,36 @@ class DocumentController extends Controller
             'data' => $types,
         ]);
     }
+
+    public function search_property(Request $request) {
+        $type = $request->input('type');
+        $search = $request->input('search') ?? '';
+
+        $data = [
+            'type' => [
+                'NDA',
+                'MSA',
+                'SOW'
+            ],
+            'category' => [
+                'My Documents',
+                'Business',
+                'Music',
+                'Sales',
+            ]
+        ];
+
+        $items = [];
+
+        if ($search) {
+            $items = collect($data[$type])->filter(function($item) use ($search) {
+                $search = strtolower($search);
+                return strpos(strtolower($item), $search) !== false;
+            })->values()->all();
+        }
+
+        return response()->json([
+            'data' => $items
+        ]);
+    }
 }

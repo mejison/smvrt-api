@@ -45,6 +45,7 @@ Route::post('/team', [App\Http\Controllers\TeamController::class, 'create_team']
 
 /* documents */
 Route::get('/document/types', [App\Http\Controllers\DocumentController::class, 'get_types'])->name('get-types');
+Route::get('/document/search/propery', [App\Http\Controllers\DocumentController::class, 'search_property'])->name('document-search-property');
 
 /* projects */
 Route::get('/project/archived', [App\Http\Controllers\ProjectController::class, 'get_archived'])->name('get-archived-project');

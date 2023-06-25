@@ -45,4 +45,26 @@ class DocumentController extends Controller
             'data' => $items
         ]);
     }
+
+    public function document_convert(Request $request) {
+        $file = $request->file('file');
+        if (in_array($file->getClientOriginalExtension(), ['doc', 'docx'])) {
+            $path = $file->getRealPath();
+            $content = \PhpOffice\PhpWord\IOFactory::load($path);
+            $writer = \PhpOffice\PhpWord\IOFactory::createWriter($content, 'HTML');
+            
+            ob_start();
+            $writer->save("php://output");
+            $content = ob_get_contents();
+            ob_end_clean();
+
+            return response()->json([
+                'data' => $content
+            ]);
+        }
+
+        return response()->json([
+            'data' => file_get_contents($file->getRealPath()),
+        ]);
+    }
 }

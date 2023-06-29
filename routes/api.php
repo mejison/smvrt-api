@@ -47,6 +47,7 @@ Route::post('/team', [App\Http\Controllers\TeamController::class, 'create_team']
 Route::get('/document/types', [App\Http\Controllers\DocumentController::class, 'get_types'])->name('get-types');
 Route::get('/document/search/propery', [App\Http\Controllers\DocumentController::class, 'search_property'])->name('document-search-property');
 Route::post('/document/convert-to-html', [App\Http\Controllers\DocumentController::class, 'document_convert'])->name('document-convert');
+
 /* projects */
 Route::get('/project/archived', [App\Http\Controllers\ProjectController::class, 'get_archived'])->name('get-archived-project');
 Route::get('/project/categories', [App\Http\Controllers\ProjectController::class, 'get_categories'])->name('get-categories');
@@ -62,3 +63,6 @@ Route::post('/notification/{notification}/read', [App\Http\Controllers\Notificat
 
 /* statistics */
 Route::get('/statistics', [App\Http\Controllers\StatisticsController::class, 'get'])->name('get');
+
+/* open AI */
+Route::post('/openai/create-req', [App\Http\Controllers\OpenAIController::class, 'create_req'])->name('create-req');

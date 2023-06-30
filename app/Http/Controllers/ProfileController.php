@@ -246,7 +246,7 @@ class ProfileController extends Controller
         $sortValue = $request->input('sortValue');
 
         $user = auth()->user();
-        $teams = $user->teams()->with('project.document.type', 'project.team.members')->get();
+        $teams = $user->teams()->with('project.document.typeDocument', 'project.team.members')->get();
        
         $projects = $teams->pluck('project')->filter();
 
@@ -269,7 +269,7 @@ class ProfileController extends Controller
             }
 
             if ($sortBy == 'doctype') {
-                return ! empty($item->document->type->id) && $item->document->type->id != $sortValue;
+                return ! empty($item->document->typeDocument->id) && $item->document->typeDocument->id != $sortValue;
             }
             
             return true;

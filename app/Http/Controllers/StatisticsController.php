@@ -9,7 +9,7 @@ class StatisticsController extends Controller
     public function get(Request $request) {
         $user = auth()->user();
 
-        $teams = $user->teams()->with('project.document.type', 'project.team.members')->get();       
+        $teams = $user->teams()->with('project.document.typeDocument', 'project.team.members')->get();       
         $projects = $teams->pluck('project')->filter();
 
         

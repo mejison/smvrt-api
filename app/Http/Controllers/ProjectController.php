@@ -162,7 +162,7 @@ class ProjectController extends Controller
 
     public function get(Request $request, Project $project) {
         return response()->json([
-            'data' => $project->load(['document.type', 'document.category', 'team', 'team.members'])
+            'data' => $project->load(['document.typeDocument', 'document.category', 'team', 'team.members'])
         ]);
     }
 
@@ -204,7 +204,7 @@ class ProjectController extends Controller
             $ids = explode(',', $filter['document_id']);
             if (count($ids)) {
                 $projects = $projects->whereHas('document', function($q) use ($ids) {
-                    return $q->whereHas('type', function($q2) use ($ids) {
+                    return $q->whereHas('typeDocument', function($q2) use ($ids) {
                         return $q2->whereIn('id', $ids);
                     });
                 });
@@ -215,7 +215,7 @@ class ProjectController extends Controller
             $projects = $projects->where('team_id', $filter['team_id']);
         }
         
-        $projects = $projects->with(['team', 'document.type'])->whereIn('team_id', $team_ids)->get();
+        $projects = $projects->with(['team', 'document.typeDocument'])->whereIn('team_id', $team_ids)->get();
 
         return response()->json([
             'data' => $projects,

@@ -11,7 +11,7 @@ class Document extends Model
 
     protected $fillable = ['name', 'path', 'user_id', 'category_id', 'type_id', 'category', 'type'];
 
-    public function type() {
+    public function typeDocument() {
         return $this->hasOne(DocumentType::class, 'id', 'type_id');
     }
 

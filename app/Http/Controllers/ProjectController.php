@@ -14,6 +14,10 @@ use App\Notifications\RequestsToChangeRole;
 use Carbon\Carbon;
 use App\Models\Approve;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+
+use App\Mail\Invite3PartyCollaborate;
+use App\Mail\InviteMemberToProject;
 
 class ProjectController extends Controller
 {
@@ -132,6 +136,23 @@ class ProjectController extends Controller
             'external_collaborators' => $external_collaborators,
         ]);
 
+        if ( ! empty($members)) {
+            collect($members)->each(function($member) use ($project, $request, $user, $team) {
+                $member = json_decode($member);
+                Mail::to($member->email)
+                    ->send(new InviteMemberToProject($user->fname . ' ' . $user->lname, $team->name ?? 'Team', $project->name, $request->input('type')));
+                });
+        }
+
+
+        if ( ! empty($external_collaborators)) {
+            collect($external_collaborators)->each(function($collaborator) use ($project, $request, $user) {
+                $collaborator = json_decode($collaborator);
+                Mail::to($collaborator->email)
+                    ->send(new Invite3PartyCollaborate($user->fname . ' '. $user->lname, $project->name, $request->input('type'), $project->due_date));
+                });
+        }
+
         if ( ! empty($request->approvers)) {
             $final_approver = $request->final_approver ? json_decode($request->final_approver) : false;
             
@@ -145,6 +166,8 @@ class ProjectController extends Controller
                 ]);
             });
         }
+
+
 
         return response()->json([
             'data' => $project,

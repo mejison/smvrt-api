@@ -31,7 +31,7 @@ class OpenAIController extends Controller
             }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'Authorization: Bearer ' . env('OPENAI_TOKEN', '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')
+                'Authorization: Bearer ' . env('OPENAI_TOKEN')
             ),
         ));
 

@@ -17,6 +17,6 @@ class Setting extends Model
         'new_version_published',
         'due_date_changes',
         'due_date_overdue',
-        'before_due_date_reminder'
+        'before_due_date_reminder',
     ];
 }

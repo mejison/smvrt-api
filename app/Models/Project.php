@@ -11,7 +11,19 @@ class Project extends Model
     use HasFactory;
     use Notifiable;
 
-    protected $fillable = ['name', 'document_id', 'due_date', 'summary', 'status', 'reminder_id', 'team_id'];
+    protected $fillable = [
+        'name', 'document_id', 'due_date',
+        'summary', 'status', 'reminder_id', 'team_id',
+        'members',
+        'signatory',
+        'external_collaborators',
+    ];
+
+    protected $casts = [
+        'members' => 'object',
+        'signatory' => 'object',
+        'external_collaborators' => 'object',
+    ];
 
     public function team() {
         return $this->hasOne(Team::class, 'id', 'team_id');
@@ -20,4 +32,5 @@ class Project extends Model
     public function document() {
         return $this->hasOne(Document::class, 'id', 'document_id');
     }
+    
 }

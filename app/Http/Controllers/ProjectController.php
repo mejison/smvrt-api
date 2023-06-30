@@ -13,6 +13,7 @@ use App\Models\Category;
 use App\Notifications\RequestsToChangeRole;
 use Carbon\Carbon;
 use App\Models\Approve;
+use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
@@ -74,12 +75,18 @@ class ProjectController extends Controller
             'approvers' => '',
             'signatories' => '',
             'save_for_future' => 'boolean'
+        ], [
+            'documentname.required' => 'The document name field is required.',
         ]);
 
         $documentPath = $request->file('document')->store('/public/documents');
 
         $team = ! empty( $request->team) ? json_decode($request->team) : false;
         $team = ! empty($team) ? Team::find($team->id) : $team;
+
+        $members = $request->input('members') ?? [];
+        $signatories = $request->input('signatories') ?? [];
+        $external_collaborators = $request->input('external_collaborators') ?? [];
         
         if ($team && $request->input('signatories') && $request->input('save_for_future')) {
             foreach(collect($request->input('signatories')) as $signatory) {
@@ -119,6 +126,10 @@ class ProjectController extends Controller
             'team_id' => ! empty($request->team)? json_decode($request->team)->id : 0,
             'document_id' => $document->id,
             'reminder_id' => $request->input('reminder_id') ?? 0,
+
+            'members' => $members,
+            'signatory' => $signatories,
+            'external_collaborators' => $external_collaborators,
         ]);
 
         if ( ! empty($request->approvers)) {

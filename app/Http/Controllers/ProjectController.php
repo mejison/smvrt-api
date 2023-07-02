@@ -88,9 +88,14 @@ class ProjectController extends Controller
         $team = ! empty( $request->team) ? json_decode($request->team) : false;
         $team = ! empty($team) ? Team::find($team->id) : $team;
 
-        $members = $request->input('members') ?? [];
-        $signatories = $request->input('signatories') ?? [];
-        $external_collaborators = $request->input('external_collaborators') ?? [];
+        $members = $request->input('members') ?: [];
+        $members = collect($members)->map(function($member) { return json_decode($member); });
+
+        $signatories = $request->input('signatories') ?: [];
+        $signatories = collect($signatories)->map(function($signatory) { return json_decode($signatory); });
+        
+        $external_collaborators = $request->input('external_collaborators') ?: [];
+        $external_collaborators = collect($external_collaborators)->map(function($external_collaborator) { return json_decode($external_collaborator); });
         
         if ($team && $request->input('signatories') && $request->input('save_for_future')) {
             foreach(collect($request->input('signatories')) as $signatory) {
@@ -130,6 +135,7 @@ class ProjectController extends Controller
             'team_id' => ! empty($request->team)? json_decode($request->team)->id : 0,
             'document_id' => $document->id,
             'reminder_id' => $request->input('reminder_id') ?? 0,
+            'reminder' =>  Carbon::parse($request->input('reminderdate'))->format('Y-m-d'),
 
             'members' => $members,
             'signatory' => $signatories,
@@ -138,7 +144,6 @@ class ProjectController extends Controller
 
         if ( ! empty($members)) {
             collect($members)->each(function($member) use ($project, $request, $user, $team) {
-                $member = json_decode($member);
                 Mail::to($member->email)
                     ->send(new InviteMemberToProject($user->fname . ' ' . $user->lname, $team->name ?? 'Team', $project->name, $request->input('type')));
                 });

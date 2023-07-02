@@ -37,7 +37,7 @@ class ReminderProject extends Mailable
     public function build()
     {
         return $this
-            ->subject('SMVRT Legal: You have tasks for the ' . $this->project_name . ' (' . $this->project_type . ') project due soon!')
+            ->subject('SMVRT Legal: You have tasks for the ' . $this->project_name . ' (' . $this->document_type . ') project due soon!')
             ->markdown('emails.reminder', [
                 'project_name' => $this->project_name,
                 'due_date' => $this->due_date,

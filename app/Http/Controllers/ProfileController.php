@@ -246,10 +246,9 @@ class ProfileController extends Controller
         $sortValue = $request->input('sortValue');
 
         $user = auth()->user();
-        $teams = $user->teams()->with('project.document.typeDocument', 'project.team.members')->get();
-       
-        $projects = $teams->pluck('project')->filter();
 
+        $projects = $user->projects()->with('document.typeDocument', 'team.members')->get();
+        
         $projects = $projects->sortBy(function($item) use ($sortBy, $sortValue) {
         
             if ($sortBy == 'name') {

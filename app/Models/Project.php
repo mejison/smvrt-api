@@ -18,6 +18,7 @@ class Project extends Model
         'signatory',
         'external_collaborators',
         'reminder',
+        'user_id',
     ];
 
     protected $casts = [

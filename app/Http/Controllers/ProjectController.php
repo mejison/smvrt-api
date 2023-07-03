@@ -69,6 +69,7 @@ class ProjectController extends Controller
             'notes' => '',
             'team' => '',
             'members' => '',
+            'user' => 'integer',
             
             'documentname' => 'required',
             'category' => 'required',
@@ -129,6 +130,7 @@ class ProjectController extends Controller
 
         $project = Project::create([
             'name' => $request->input('name'),
+            'user_id' => $request->input('user') ?? 0,
             'due_date' => Carbon::parse($request->input('duedate'))->format('Y-m-d'),
             'summary' => $request->input('notes'),
             'status' => 'new',

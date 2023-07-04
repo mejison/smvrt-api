@@ -70,6 +70,7 @@ class ProjectController extends Controller
             'team' => '',
             'members' => '',
             'user' => 'integer',
+            'ai_summary' => 'string',
             
             'documentname' => 'required',
             'category' => 'required',
@@ -79,7 +80,9 @@ class ProjectController extends Controller
             'final_approver' => '',
             'approvers' => '',
             'signatories' => '',
-            'save_for_future' => 'boolean'
+            'save_for_future' => 'boolean',
+            
+            'content' => 'string',
         ], [
             'documentname.required' => 'The document name field is required.',
         ]);
@@ -126,6 +129,7 @@ class ProjectController extends Controller
             'type' => $request->input('type'),
             'category' => $request->input('category'),
             'path' => $documentPath,
+            'content' => $request->input('content'),
         ]);
 
         $project = Project::create([
@@ -142,6 +146,8 @@ class ProjectController extends Controller
             'members' => $members,
             'signatory' => $signatories,
             'external_collaborators' => $external_collaborators,
+
+            'ai_summary' => $request->input('ai_summary') ?? '',
         ]);
 
         if ( ! empty($members)) {

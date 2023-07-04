@@ -19,6 +19,7 @@ class Project extends Model
         'external_collaborators',
         'reminder',
         'user_id',
+        'ai_summary',
     ];
 
     protected $casts = [

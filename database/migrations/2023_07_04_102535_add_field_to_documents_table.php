@@ -14,7 +14,7 @@ class AddFieldToDocumentsTable extends Migration
     public function up()
     {
         Schema::table('documents', function (Blueprint $table) {
-            $table->text('content')->nullable();
+            $table->longText('content')->nullable();
         });
     }
 

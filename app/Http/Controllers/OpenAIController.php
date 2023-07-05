@@ -7,8 +7,13 @@ use Illuminate\Http\Request;
 class OpenAIController extends Controller
 {
     public function create_req(Request $request) {
+        $post = json_decode(file_get_contents('php://input'), true);
 
-        $content = $request->input('content');
+        $prompt = ! empty($post['prompt']) ? $post['prompt'] : 'Summarize this agreement document: ';
+        $max_tokens = ! empty($post['max_tokens']) ? $post['max_tokens'] : 256;
+        $content = ! empty($post['content']) ? $post['content'] : '';
+
+        $content = ltrim(strip_tags($content), '"');
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -22,9 +27,9 @@ class OpenAIController extends Controller
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_POSTFIELDS =>'{
             "model": "text-davinci-003",
-            "prompt": "Summarize this agreement document:' . $content . '",
+            "prompt": "' . $prompt . $content . '",
             "temperature": 0.7,
-            "max_tokens": 256,
+            "max_tokens": ' . $max_tokens . ',
             "top_p": 1,
             "frequency_penalty": 0,
             "presence_penalty": 0

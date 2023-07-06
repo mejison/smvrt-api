@@ -10,10 +10,22 @@ class OpenAIController extends Controller
         $post = json_decode(file_get_contents('php://input'), true);
 
         $prompt = ! empty($post['prompt']) ? $post['prompt'] : 'Summarize this agreement document: ';
-        $max_tokens = ! empty($post['max_tokens']) ? $post['max_tokens'] : 256;
+        $max_tokens = ! empty($post['max_tokens']) ? (integer)$post['max_tokens'] : 256;
         $content = ! empty($post['content']) ? $post['content'] : '';
 
         $content = ltrim(strip_tags($content), '"');
+
+        $content = substr($content, 0, 400);
+
+        $data = json_encode([
+            "model" => "text-davinci-003",
+            "prompt" => "' . $prompt . $content . '",
+            "temperature" => 0.7,
+            "max_tokens" => $max_tokens,
+            "top_p" => 1,
+            "frequency_penalty" => 0,
+            "presence_penalty" => 0
+        ]);
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -25,15 +37,7 @@ class OpenAIController extends Controller
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS =>'{
-            "model": "text-davinci-003",
-            "prompt": "' . $prompt . $content . '",
-            "temperature": 0.7,
-            "max_tokens": ' . $max_tokens . ',
-            "top_p": 1,
-            "frequency_penalty": 0,
-            "presence_penalty": 0
-            }',
+            CURLOPT_POSTFIELDS => $data,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . env('OPENAI_TOKEN')
